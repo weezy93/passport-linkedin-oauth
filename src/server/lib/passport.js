@@ -4,6 +4,10 @@ var helpers = require('./helpers');
 var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 if( !process.env.NODE_ENV ) { require('dotenv').config();}
 
+function Users() {
+  return knex('users');
+}
+
 passport.use(new LinkedInStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
@@ -12,7 +16,25 @@ passport.use(new LinkedInStrategy({
   scope: ['r_emailaddress', 'r_basicprofile']
 }, function(accessToken, refreshToken, profile, done) {
   process.nextTick(function () {
-    return done(null, {id: profile.id, displayName: profile.displayName, email: profile.emails});
+
+    Users().where('linkedin_id', profile.id)
+    .orWhere('email', profile.emails[0].value)
+    .first()
+    .then(function(user) {
+      if(!user){
+        return Users().insert({
+          linkedin_id: profile.id,
+          displayName: profile.displayName,
+          familyName: profile.familyName,
+          email: profile.emails[0].value,
+          photo: profile.photos[0].value
+        }).returning('id').then(function(id) {
+          return done(null, id[0]);
+        });
+      } else {
+        return done(null, user.id);
+      }
+    });
   });
 }));
 
