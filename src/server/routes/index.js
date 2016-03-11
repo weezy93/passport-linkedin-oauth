@@ -5,15 +5,25 @@ var knex = require('../../../db/knex');
 var passport = require('../lib/passport');
 var bcrypt = require('bcrypt');
 var helpers = require('../lib/helpers');
+function Users() {
+  return knex('users');
+}
 
 router.get('/', function(req, res, next) {
-  if( req.user ){
-    var name = req.user.displayName || '';
-    var email = req.user.email[0].value;
-    res.render('index', { title: 'Hello '+ name});
-  } else {
-      res.render('index', {title: 'Hello!'});
-  }
+  Users().where('id', req.user).then(function(result){
+    if( result.length ){
+      var name = result[0].displayName;
+      console.log(name);
+      res.render('index', {
+        title: 'Hello '+ name, profile: result[0]
+      });
+    } else {
+        res.render('index', {title: 'Hello!'});
+    }
+  })
+  .catch(function(error) {
+    console.log('error', error);
+  });
 });
 
 router.get('/linkedin', passport.authenticate('linkedin'));
