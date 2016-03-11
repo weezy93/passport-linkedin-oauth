@@ -11,7 +11,7 @@ passport.use(new LinkedInStrategy({
   state: true
 }, function(accessToken, refreshToken, profile, done) {
   process.nextTick(function () {
-    return done(null, profile);
+    return done(null, {id: profile.id, displayName: profile.displayName});
   });
 }));
 
