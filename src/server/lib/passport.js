@@ -8,10 +8,11 @@ passport.use(new LinkedInStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
   callbackURL: "http://localhost:3000/linkedin/callback",
-  state: true
+  state: true,
+  scope: ['r_emailaddress', 'r_basicprofile']
 }, function(accessToken, refreshToken, profile, done) {
   process.nextTick(function () {
-    return done(null, {id: profile.id, displayName: profile.displayName});
+    return done(null, {id: profile.id, displayName: profile.displayName, email: profile.emails});
   });
 }));
 

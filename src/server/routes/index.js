@@ -9,7 +9,8 @@ var helpers = require('../lib/helpers');
 router.get('/', function(req, res, next) {
   if( req.user ){
     var name = req.user.displayName || '';
-    res.render('index', { title: 'Hello '+ name });
+    var email = req.user.email[0].value;
+    res.render('index', { title: 'Hello '+ name});
   } else {
       res.render('index', {title: 'Hello!'});
   }
@@ -27,9 +28,9 @@ router.get('/linkedin/callback', passport.authenticate('linkedin', {
 );
 
 router.get('/logout', function(req, res, next) {
-  req.session = null;
+  // req.session = null;
+  req.logout();
   res.redirect('/');
-  console.log('logged out');
 });
 
 
