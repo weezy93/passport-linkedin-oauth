@@ -12,13 +12,13 @@ function Users() {
 router.get('/', function(req, res, next) {
   Users().where('id', req.user).then(function(result){
     if( result.length ){
-      var name = result[0].displayName;
-      console.log(name);
-      res.render('index', {
-        title: 'Hello '+ name, profile: result[0]
-      });
+      res.render('index', {title: 'Hello!'});      
     } else {
-        res.render('index', {title: 'Hello!'});
+        var name = result[0].displayName;
+        console.log(name);
+        res.render('index', {
+          title: 'Hello '+ name, profile: result[0]
+        });
     }
   })
   .catch(function(error) {
